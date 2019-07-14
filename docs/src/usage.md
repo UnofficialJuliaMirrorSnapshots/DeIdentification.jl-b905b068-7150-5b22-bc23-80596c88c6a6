@@ -104,7 +104,7 @@ datasets:
   - name: dx
     filename: "./data/dx_files/*" # Glob pattern option
     rename_cols:
-      - in: "EncounterEpicCSN"
+      - in: "EncounterBrownCSN"
         out: "CSN"
     hash_cols:
       - "CSN"
@@ -112,12 +112,12 @@ datasets:
     dateshift_cols:
       - "ArrivalDateandTime"
     drop_cols:
-      - "EDDiagnosisTerminologyType"
+      - "DiagnosisTerminologyType"
   - name: pat
     filename: "./data/pat.csv"
     # NOTE: renaming happens before any other operations (pre-processing, hashing, salting, dropping, dateshifting, post-processing)
     rename_cols:
-      - in: "EncounterEpicCSN"
+      - in: "EncounterBrownCSN"
         out: "CSN"
       - in: "PatientLastName"
         out: "last_name"
@@ -141,7 +141,7 @@ datasets:
   - name: med
     filename: "./data/med.csv"
     rename_cols:
-      - in: "EncounterEpicCSN"
+      - in: "EncounterBrownCSN"
         out: "CSN"
     hash_cols:
       - "CSN"
