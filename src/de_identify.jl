@@ -25,6 +25,7 @@ struct FileConfig
     rename_cols::Dict{Symbol,Symbol}
     preprocess::Dict{Symbol, String}
     postprocess::Dict{Symbol, String}
+    dateformat::String
 end
 
 
@@ -55,7 +56,7 @@ function ProjectConfig(cfg_file::String)
     pk = Symbol(cfg["primary_id"])
     dateformat = get(cfg, "date_format", "y-m-dTH:M:S.s")
 
-    seed = get(cfg, "project_seed", _ -> make_seed()[1])
+    seed = get(_ -> make_seed()[1], cfg, "project_seed")
     maxdays = get(cfg, "max_dateshift_days", 30)
     shiftyears = get(cfg, "dateshift_years", 0)
 
@@ -64,8 +65,8 @@ function ProjectConfig(cfg_file::String)
 
     # populate File Configs
     for (i, ds) in enumerate(cfg["datasets"])
-        
         name = ds["name"]
+        file_dateformat = get(ds, "date_format", dateformat)
         rename_dict = Dict{Symbol,Symbol}()
         for pair in get(ds, "rename_cols", [])
             rename_dict[Symbol(pair["in"])] = Symbol(pair["out"])
@@ -89,7 +90,7 @@ function ProjectConfig(cfg_file::String)
 
         for (j, f) in enumerate(Glob.glob(ds["filename"]))
             filename = f
-            file_config = FileConfig(name, filename, col_map, rename_dict, preprocess_dict, postprocess_dict)
+            file_config = FileConfig(name, filename, col_map, rename_dict, preprocess_dict, postprocess_dict, file_dateformat)
             push!(file_configs, file_config)
         end
     end

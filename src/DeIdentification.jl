@@ -14,6 +14,7 @@ import Memento
 import DataStructures: OrderedDict
 import REPL
 using REPL.TerminalMenus
+using DelimitedFiles
 
 include("config_builder.jl")
 include("de_identify.jl")
@@ -28,9 +29,8 @@ Writes the deidentified data to a CSV file and updates the global dictionaries
 tracking identifier mappings.
 """
 function deid_file!(dicts::DeIdDicts, fc::FileConfig, pc::ProjectConfig, logger)
-
     # Initiate new file
-    infile = CSV.File(fc.filename, dateformat = pc.dateformat)
+    infile = CSV.File(fc.filename, dateformat = fc.dateformat)
     outfile = joinpath(pc.outdir, "deid_" * fc.name * "_" * getcurrentdate() * ".csv")
 
     ncol = length(infile.names)
@@ -71,8 +71,8 @@ function deid_file!(dicts::DeIdDicts, fc::FileConfig, pc::ProjectConfig, logger)
 
     open(outfile, "w") do io
         # write header to file
-        CSV.printheader(
-            io, [string(n) for n in new_names], ",", '"', '"', '"', '\n')
+        header = [string(n) for n in new_names]
+        writedlm(io, reshape(header, 1, length(header)), ',')
 
         # Process each row
         for row in infile
